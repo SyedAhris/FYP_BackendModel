@@ -7,17 +7,15 @@ from Helpers import scale_coords
 from Helpers import plot_one_box
 from Helpers import preprocess
 
-
+import cv2
 #initialize model with null
 
 
 class Model:
     def __init__(self):
-        self.model = None
+        #self.model = attempt_load('Model/weight.pt', device=torch.device('cpu'))
+        self.model = torch.hub.load('./yolov5', 'custom', path='./Model/weight.pt', source='local')
         self.img_size = 640
-
-    def loadModel(self):
-        self.model = attempt_load('Model/weight.pt', map_location=torch.device('cpu'))
 
     def pred_annot(self, frame: object) -> object:
         img = preprocess(frame, [self.img_size,self.img_size], letter_box=True)
@@ -40,5 +38,6 @@ class Model:
                 label = f'{self.model.names[int(cls)]} {conf:.2f}'
                 plot_one_box(xyxy, frame, label=label, color=(0, 255, 0), line_thickness=3)
 
+        cv2.imshow(frame)
         return frame
 
