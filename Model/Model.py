@@ -7,8 +7,9 @@ from Helpers import scale_coords
 from Helpers import plot_one_box
 from Helpers import preprocess
 
+from yolov5.utils.plots import Annotator, colors
+import numpy as np
 import cv2
-#initialize model with null
 
 
 class Model:
@@ -17,27 +18,43 @@ class Model:
         self.model = torch.hub.load('./yolov5', 'custom', path='./Model/weight.pt', source='local')
         self.img_size = 640
 
-    def pred_annot(self, frame: object) -> object:
-        img = preprocess(frame, [self.img_size,self.img_size], letter_box=True)
+    def pred_annot(self, frame):
 
-        # Convert image to Torch tensor
-        img = torch.from_numpy(img).to('cpu')
+        img = frame
 
-        # Add batch dimension
-        img = img.unsqueeze(0)
+        pred = self.model(img, size=640)
 
-        pred = self.model(img)[0]
+        # pred = non_max_suppression(pred, conf_thres=0.5, iou_thres=0.45, classes=None, agnostic=False, max_det=0.3)
 
-        pred = non_max_suppression(pred, conf_thres=0.5, iou_thres=0.5)[0]
+        res = pred.pandas().xyxy[0].to_json(orient="records")
 
-        # Draw boxes on the original frame
-        if pred is not None:
-            pred[:, :4] = scale_coords(img.shape[2:], pred[:, :4], frame.shape).round()
+        print(res)
 
-            for *xyxy, conf, cls in pred:
-                label = f'{self.model.names[int(cls)]} {conf:.2f}'
-                plot_one_box(xyxy, frame, label=label, color=(0, 255, 0), line_thickness=3)
 
-        cv2.imshow(frame)
-        return frame
+
+        #TODO:annotate the frame
+
+        # annotator = Annotator(img, line_width=3, example=str(self.model.names))
+        # for i, det in enumerate(pred):
+        #     if len(det):
+        #         for *xyxy, conf, cls in reversed(det):
+        #             c = int(cls)  # integer class
+        #             label = None if False else (self.model.names[c] if False else f'{self.model.names[c]} {conf:.2f}')
+        #             annotator.box_label(xyxy, label, color=colors(c, True))
+        #
+        # img = annotator.result()
+        #return the frame
+        # return img
+
+        # pred = non_max_suppression(pred, conf_thres=0.5, iou_thres=0.5)[0]
+        #
+        # # Draw boxes on the original frame
+        # if pred is not None:
+        #     pred[:, :4] = scale_coords(img.shape[2:], pred[:, :4], frame.shape).round()
+        #
+        #     for *xyxy, conf, cls in pred:
+        #         label = f'{self.model.names[int(cls)]} {conf:.2f}'
+        #         plot_one_box(xyxy, frame, label=label, color=(0, 255, 0), line_thickness=3)
+        #
+        # cv2.imshow(img)
 
