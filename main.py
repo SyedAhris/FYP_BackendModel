@@ -35,7 +35,7 @@ async def rtsp_stream(websocket: WebSocket):
 
         if ret:
             # Run inference
-            frame = Model.pred_annot(frame=frame)
+            frame = model.pred_annot(frame=frame)
 
             # Send processed frame to WebSocket client
             await conn.send_frame(frame)
