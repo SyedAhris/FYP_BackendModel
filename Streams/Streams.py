@@ -39,8 +39,8 @@ class Streams:
             ret, frame = cap.read()
             if ret:
                 pred = self.model.pred_annot(frame=frame)
-                img = pred[0]  # returns an annotated frame back
-                count = pred[1]  # returns the count of the vehicles
+                img = pred[1]  # returns an annotated frame back
+                count = pred[0]  # returns the count of the vehicles
 
                 # TODO: using count of each traffic signal in intersection use an algorithm to determine the traffic
                 #  light color
