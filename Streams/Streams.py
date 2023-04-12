@@ -1,3 +1,4 @@
+from DAL.Data.Data import Data
 from DAL.Repository.MockRepository import MockRepository
 from threading import Thread
 import cv2
@@ -6,15 +7,13 @@ from DAL.Model.Intersection_Model import IntersectionModel
 from DAL.Model.Signal_Model import SignalModel
 from Model.Model import Model
 
+
 class Streams:
     def __init__(self):
-        self.repository = MockRepository()
-        self.stream_links = self.repository.get_stream_links()
-        self.stream_threads = []
-        self.stream_frames = {}
+        self.data = Data()
         self.model = Model()
         # TODO@ahirs : configure for each intersection not for each stream
-        for intersection in self.stream_links:
+        for intersection in self.data.stream_links:
             assert isinstance(intersection, IntersectionModel)
             for signal in intersection.signals:
                 assert isinstance(signal, SignalModel)
@@ -22,13 +21,13 @@ class Streams:
                 intersection_id = intersection._id
                 combined_id = f'{intersection_id}_{signal_id}'
                 # create a thread that will run the link function
-                t = Thread(target=self.read_stream_link, args=(signal, combined_id, ))
-                self.stream_frames[combined_id] = bytes()
-                self.stream_threads.append(t)
+                t = Thread(target=self.read_stream_link, args=(signal, combined_id,))
+                self.data.stream_frames[combined_id] = bytes()
+                self.data.stream_counts[combined_id] = [0, 0]  # 1st index is count of non-emergency vehicles,
+                # 2nd index is count of emergency vehicles
+                self.data.stream_links.append(t)
                 t.start()
 
-    def add_stream_link(self, link: str):
-        self.stream_links.append(link)
 
     def read_stream_link(self, signal: SignalModel, combined_id: str):
         cap = cv2.VideoCapture(signal.link)
@@ -42,9 +41,7 @@ class Streams:
                 pred = self.model.pred_annot(frame=frame)
                 img = pred[1]  # returns an annotated frame back
                 count = pred[0]  # returns the count of the vehicles
-
-                # TODO: using count of each traffic signal in intersection use an algorithm to determine the traffic
-                #  light color
+                self.data.stream_counts[stream_name] = count
 
                 # create a stream from the annotated frame
 
@@ -56,7 +53,7 @@ class Streams:
 
                 # print(bytes_frame)
                 # store in the stream_frames dictionary that acts a buffer
-                self.stream_frames[stream_name] = bytes_frame
+                self.data.stream_frames[stream_name] = bytes_frame
 
             else:
                 break
@@ -64,7 +61,7 @@ class Streams:
 
     def send_frame(self, stream_name):
         while True:
-            frame_bytes = self.stream_frames[stream_name]
+            frame_bytes = self.data.stream_frames[stream_name]
             # print(self.stream_frames[stream_name])
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
