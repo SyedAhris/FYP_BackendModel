@@ -1,9 +1,9 @@
-from DAL.MockRepository import MockRepository
+from DAL.Repository.MockRepository import MockRepository
 from threading import Thread
 import cv2
 
-from DAL.Intersection_Model import IntersectionModel
-from DAL.Signal_Model import SignalModel
+from DAL.Model.Intersection_Model import IntersectionModel
+from DAL.Model.Signal_Model import SignalModel
 from Model.Model import Model
 
 class Streams:

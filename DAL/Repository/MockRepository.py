@@ -1,6 +1,6 @@
-from DAL.Repository import Repository
-from DAL.Intersection_Model import IntersectionModel
-from DAL.Signal_Model import SignalModel
+from DAL.Repository.Repository import Repository
+from DAL.Model.Intersection_Model import IntersectionModel
+from DAL.Model.Signal_Model import SignalModel
 
 
 class MockRepository(Repository):
