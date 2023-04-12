@@ -2,7 +2,8 @@ from DAL.MockRepository import MockRepository
 from threading import Thread
 import cv2
 
-from DAL.intersection_model import SignalModel, IntersectionModel
+from DAL.Intersection_Model import IntersectionModel
+from DAL.Signal_Model import SignalModel
 from Model.Model import Model
 
 class Streams:
