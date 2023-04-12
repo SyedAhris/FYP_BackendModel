@@ -2,8 +2,8 @@ from DAL.MockRepository import MockRepository
 from threading import Thread
 import cv2
 
+from DAL.intersection_model import SignalModel, IntersectionModel
 from Model.Model import Model
-
 
 class Streams:
     def __init__(self):
@@ -13,29 +13,34 @@ class Streams:
         self.stream_frames = {}
         self.model = Model()
         # TODO@ahirs : configure for each intersection not for each stream
-        for item in self.stream_links:
-            link = item['link']
-            id = item['_id']
-            # create a thread that will run the link function
-            t = Thread(target=self.read_stream_link, args=(link,id,))
-            self.stream_frames[id] = bytes()
-            self.stream_threads.append(t)
-            t.start()
+        for intersection in self.stream_links:
+            assert isinstance(intersection, IntersectionModel)
+            for signal in intersection.signals:
+                assert isinstance(signal, SignalModel)
+                signal_id = signal._id
+                intersection_id = intersection._id
+                combined_id = f'{intersection_id}_{signal_id}'
+                # create a thread that will run the link function
+                t = Thread(target=self.read_stream_link, args=(signal, combined_id, ))
+                self.stream_frames[combined_id] = bytes()
+                self.stream_threads.append(t)
+                t.start()
 
     def add_stream_link(self, link: str):
         self.stream_links.append(link)
 
-    def read_stream_link(self, link: str, item_id: str):
-        cap = cv2.VideoCapture(link)
+    def read_stream_link(self, signal: SignalModel, combined_id: str):
+        cap = cv2.VideoCapture(signal.link)
         # split_link = link.split('/')
-        stream_name = item_id
+        stream_name = combined_id
         print(f'Streaming {stream_name}...')
 
         while True:
             ret, frame = cap.read()
             if ret:
-                img = self.model.pred_annot(frame=frame)[1]  # returns an annotated frame back
-                count = self.model.pred_annot(frame=frame)[0]  # returns the count of the vehicles
+                pred = self.model.pred_annot(frame=frame)
+                img = pred[0]  # returns an annotated frame back
+                count = pred[1]  # returns the count of the vehicles
 
                 # TODO: using count of each traffic signal in intersection use an algorithm to determine the traffic
                 #  light color
@@ -48,6 +53,7 @@ class Streams:
                 # convert JPEG-encoded frame to bytes
                 bytes_frame = encoded_frame.tobytes()
 
+                # print(bytes_frame)
                 # store in the stream_frames dictionary that acts a buffer
                 self.stream_frames[stream_name] = bytes_frame
 
@@ -57,7 +63,7 @@ class Streams:
 
     def send_frame(self, stream_name):
         while True:
-            stream_name = int(stream_name)
             frame_bytes = self.stream_frames[stream_name]
+            # print(self.stream_frames[stream_name])
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
