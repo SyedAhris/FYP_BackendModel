@@ -12,9 +12,10 @@ class Streams:
     def __init__(self):
         self.data = Data()
         self.model = Model()
-        # TODO@ahirs : configure for each intersection not for each stream
+        print(self.data.stream_links)
         for intersection in self.data.stream_links:
             assert isinstance(intersection, IntersectionModel)
+            print(intersection)
             for signal in intersection.signals:
                 assert isinstance(signal, SignalModel)
                 signal_id = signal._id
@@ -25,9 +26,30 @@ class Streams:
                 self.data.stream_frames[combined_id] = bytes()
                 self.data.stream_counts[combined_id] = [0, 0]  # 1st index is count of non-emergency vehicles,
                 # 2nd index is count of emergency vehicles
-                self.data.stream_links.append(t)
+                self.data.stream_threads.append(t)
                 t.start()
 
+            t = Thread(target=self.calculate_lights, args=(intersection,))
+            t.start()
+
+    def calculate_lights(self, intersection: IntersectionModel):
+        while True:
+
+            # example counts =  [[1, 0], [2, 0], [3, 0], [4, 0]]
+            counts = []
+
+            for signal in intersection.signals:
+                assert isinstance(signal, SignalModel)
+                signal_id = signal._id
+                intersection_id = intersection._id
+                combined_id = f'{intersection_id}_{signal_id}'
+                counts.append(self.data.stream_counts[combined_id])
+
+            # print(f'id: {intersection._id} counts: {counts}')
+
+            # TODO create an algorithm that will calculate the traffic light color based on the counts of each signal
+
+            # TODO send the traffic light color to the signals
 
     def read_stream_link(self, signal: SignalModel, combined_id: str):
         cap = cv2.VideoCapture(signal.link)
