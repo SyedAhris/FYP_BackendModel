@@ -26,7 +26,9 @@ class MockRepository(Repository):
                 _id='intersection_1',
                 signals=[
                     SignalModel(_id='01',
-                                link='http://61.211.241.239/nphMotionJpeg?Resolution=640x640&Quality=Standard')
+                                link='http://61.211.241.239/nphMotionJpeg?Resolution=640x640&Quality=Standard'
+                                #link='http://127.0.0.1:8080'
+                                )
                 ]
             ),
             # IntersectionModel(
