@@ -1,0 +1,4 @@
+outs:
+- md5: 322e4d796b218d60e3cc42820f13f108
+  size: 370063247
+  path: best_5l_v11.pt
