@@ -24,7 +24,7 @@ class Model:
 
         for bbox in pred.xyxy[0]:
             xmin, ymin, xmax, ymax, conf, cls = bbox.tolist()
-            color = (0, 255, 0) if cls == 1 else (0, 0, 255)  # Green for non-emergency, Red for emergency
+            color = (0, 255, 0) if cls == 0 else (0, 0, 255)  # Green for non-emergency, Red for emergency
             cv2.rectangle(frame, (int(xmin), int(ymin)), (int(xmax), int(ymax)), color, 2)
             cv2.putText(frame, f"{conf:.2f}", (int(xmin), int(ymin - 5)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
