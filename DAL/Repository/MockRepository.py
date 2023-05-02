@@ -29,6 +29,7 @@ class MockRepository(Repository):
                                 #link='http://61.211.241.239/nphMotionJpeg?Resolution=640x640&Quality=Standard'
                                 #link='http://100.120.50.250:5000'
                                 link='https://vlc.ahris.ninja/01'
+                                # link='http://192.168.0.100:8002/01'
                                 )
                 ]
             ),
