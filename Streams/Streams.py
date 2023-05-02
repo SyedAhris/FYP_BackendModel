@@ -48,6 +48,8 @@ class Streams:
             # print(f'id: {intersection._id} counts: {counts}')
 
             # TODO create an algorithm that will calculate the traffic light color based on the counts of each signal
+            #   @Irtiza check this out take help from GPT too and also the methods that I sent you
+
 
             # TODO send the traffic light color to the signals
 
