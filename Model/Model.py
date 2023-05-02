@@ -16,7 +16,7 @@ class Model:
 
         res = pred.pandas().xyxy[0].to_json(orient="records")
         count = pred.pandas().xyxy[0].shape[0]
-        # TODO calculate count for emergency and non emergency both
+        # TODO@irtiza  calculate count for emergency and non emergency both
 
         #print(res)
         # Output:
@@ -30,4 +30,4 @@ class Model:
 
         return [[count, 0], frame]  # returns unnanoted frame for now for checking purposes and [count, 0] for testing purposes
 
-        # TODO@irtiza:annotate the frame and return it instead of the original frame
+        # TODO@Irtiza send back the 2 counts values Non Emergency followed by Emergency [[NonEmegency, Emergency], frame]
