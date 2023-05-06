@@ -1,4 +1,4 @@
-FROM python:3.10.10-slim-buster
+FROM cv2_base_docker
 
 RUN mkdir /code
 
