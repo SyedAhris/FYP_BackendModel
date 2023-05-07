@@ -1,4 +1,4 @@
-FROM cv2_base_docker
+FROM base_cv2_docker:latest
 
 RUN mkdir /code
 
