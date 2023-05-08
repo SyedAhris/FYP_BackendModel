@@ -15,7 +15,14 @@ class Model:
 
         res = pred.pandas().xyxy[0].to_json(orient="records")
         count = pred.pandas().xyxy[0].shape[0]
-        # TODO@irtiza  calculate count for emergency and non emergency both
+
+        count_emergency = 0
+        count_non_emergency = 0
+
+        # Box for counting
+        height, width, _ = frame.shape
+        bottom_area_y = int(7 / 8 * height)
+        #cv2.rectangle(frame, (0, bottom_area_y), (width, height), (255, 255, 255), -1)
 
         #print(res)
         # Output:
@@ -27,7 +34,13 @@ class Model:
                 color = (0, 255, 0) if cls == 0 else (0, 0, 255)  # Green for non-emergency, Red for emergency
                 cv2.rectangle(frame, (int(xmin), int(ymin)), (int(xmax), int(ymax)), color, 2)
                 cv2.putText(frame, f"{conf:.2f}", (int(xmin), int(ymin - 5)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+                # Count emergency and non-emergency vehicles within the bottom area
+                if ymin >= bottom_area_y and cls == 0:
+                    count_emergency += 1
+                elif ymin >= bottom_area_y and cls == 1:
+                    count_non_emergency += 1
 
-        return [[count, 0], frame]  # returns unnanoted frame for now for checking purposes and [count, 0] for testing purposes
+        print(count_emergency,count_non_emergency)
+        return [[count_non_emergency, count_emergency], frame]  # returns unnanoted frame for now for checking purposes and [count, 0] for testing purposes
 
         # TODO@Irtiza send back the 2 counts values Non Emergency followed by Emergency [[NonEmegency, Emergency], frame]
