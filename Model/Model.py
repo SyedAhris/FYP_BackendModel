@@ -9,7 +9,6 @@ class Model:
 
     def pred_annot(self, frame):
         img = frame
-
         pred = self.model(img, size=640)
 
         # pred = non_max_suppression(pred, conf_thres=0.5, iou_thres=0.45, classes=None, agnostic=False, max_det=0.3)
@@ -24,9 +23,10 @@ class Model:
 
         for bbox in pred.xyxy[0]:
             xmin, ymin, xmax, ymax, conf, cls = bbox.tolist()
-            color = (0, 255, 0) if cls == 0 else (0, 0, 255)  # Green for non-emergency, Red for emergency
-            cv2.rectangle(frame, (int(xmin), int(ymin)), (int(xmax), int(ymax)), color, 2)
-            cv2.putText(frame, f"{conf:.2f}", (int(xmin), int(ymin - 5)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+            if conf > 0.5:
+                color = (0, 255, 0) if cls == 0 else (0, 0, 255)  # Green for non-emergency, Red for emergency
+                cv2.rectangle(frame, (int(xmin), int(ymin)), (int(xmax), int(ymax)), color, 2)
+                cv2.putText(frame, f"{conf:.2f}", (int(xmin), int(ymin - 5)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
         return [[count, 0], frame]  # returns unnanoted frame for now for checking purposes and [count, 0] for testing purposes
 
