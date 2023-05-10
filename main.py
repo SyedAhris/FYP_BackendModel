@@ -1,12 +1,15 @@
 from fastapi import FastAPI
 
+from DAL.Data.Data import Data
+from DataObserver.StreamObserver import StreamObserver
 from Streams.Streams import Streams
 from starlette.responses import StreamingResponse
 
 app = FastAPI()
 
+data = Data()
 # Initialization Phase
-streams = Streams()
+streams = Streams(data)
 
 
 @app.get("/")
@@ -25,6 +28,7 @@ def notify_change():
 
 @app.get("/streams/{stream_name_input}")
 async def video_feed(stream_name_input: str):
+    streamObserver = StreamObserver(data, stream_name_input)
     print(f'Running /{stream_name_input}')
-    return StreamingResponse(streams.send_frame(stream_name_input),
+    return StreamingResponse(streamObserver.send_frame(stream_name_input),
                              media_type="multipart/x-mixed-replace; boundary=frame")
