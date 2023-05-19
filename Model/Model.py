@@ -22,7 +22,12 @@ class Model:
         # Box for counting
         height, width, _ = frame.shape
         bottom_area_y = int(7 / 8 * height)
-        #cv2.rectangle(frame, (0, bottom_area_y), (width, height), (255, 255, 255), -1)
+
+        # Box
+        #cv2.rectangle(frame, (0, bottom_area_y), (width, height), (0, 0, 0), -1)
+        # Line below shows area covered for counting
+        #cv2.line(frame, (0, bottom_area_y), (width, bottom_area_y), (0, 0, 0), 2)
+
 
         #print(res)
         # Output:
@@ -35,12 +40,11 @@ class Model:
                 cv2.rectangle(frame, (int(xmin), int(ymin)), (int(xmax), int(ymax)), color, 2)
                 cv2.putText(frame, f"{conf:.2f}", (int(xmin), int(ymin - 5)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
                 # Count emergency and non-emergency vehicles within the bottom area
-                if ymin >= bottom_area_y and cls == 0:
-                    count_emergency += 1
-                elif ymin >= bottom_area_y and cls == 1:
-                    count_non_emergency += 1
+                if ymin <= bottom_area_y:
+                    if cls == 0:
+                        count_emergency += 1
+                    elif cls == 1:
+                        count_non_emergency += 1
 
         print(count_emergency,count_non_emergency)
-        return [[count_non_emergency, count_emergency], frame]  # returns unnanoted frame for now for checking purposes and [count, 0] for testing purposes
-
-        # TODO@Irtiza send back the 2 counts values Non Emergency followed by Emergency [[NonEmegency, Emergency], frame]
+        return [[count_non_emergency, count_emergency], frame]
