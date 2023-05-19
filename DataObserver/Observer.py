@@ -11,3 +11,6 @@ class Observer:
 
     def update(self):
         pass
+
+    def update(self, intersection_id):
+        pass
