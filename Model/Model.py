@@ -4,7 +4,8 @@ import cv2
 class Model:
     def __init__(self):
         # self.model = attempt_load('Model/weight.pt', device=torch.device('cpu'))
-        self.model = torch.hub.load('./yolov5', 'custom', path='./Model/Weights/best_5l_v11.pt', source='local')
+        # self.model = torch.hub.load('./yolov5', 'custom', path='./Model/Weights/best_5l_v11.pt', source='local')
+        self.model = torch.hub.load('yolov5', 'custom', path='Model/Weights/best_5l_v11.pt', source='local') # use for development
         self.img_size = 640
 
     def pred_annot(self, frame):
