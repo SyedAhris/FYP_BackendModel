@@ -35,6 +35,7 @@ class Data:
         from DataObserver.Observer import Observer
         if isinstance(observer, Observer):
             self.__observers.append(observer)
+            print(f'Attaching observer of type {type(observer)}')
         else:
             raise TypeError("observer must be an instance of Observer")
 
@@ -47,7 +48,9 @@ class Data:
     def notify_stream_realtime_data_observer(self, intersection_id):
         from DataObserver.RealtimeDataObserver import RealtimeDataObserver
         for observer in self.__observers:
+            print(f'Checking Observer')
             if isinstance(observer, RealtimeDataObserver):
+                print(f'Notifying Observer {observer}')
                 observer.update(intersection_id)
 
     def set_stream_realtime_data(self, intersection_id: str, stream_realtime_data: StreamRealtimeData):
@@ -60,6 +63,8 @@ class Data:
     def get_stream_realtime_data_by_id(self, intersection_id: str):
         return self.__stream_realtime_data[intersection_id]
 
+    def get_stream_links(self):
+        return self.stream_links
     # def get_stream_realtime_data_by_id(self, intersection_id: str):
     #     return self.__stream_realtime_data[intersection_id][list(self.__stream_realtime_data)[-1]]
 

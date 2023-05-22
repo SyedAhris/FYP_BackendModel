@@ -7,6 +7,7 @@ from DAL.Model.Intersection_Model import IntersectionModel
 from DAL.Model.Signal_Model import SignalModel
 from DAL.Model.StreamRealtimeData import StreamRealtimeData
 from DAL.Model.StreamRealtimeSignalData import StreamRealtimeSignalData
+from DataObserver.RealtimeDataObserver import RealtimeDataObserver
 from Model.Model import Model
 
 
@@ -24,9 +25,9 @@ class Streams:
             for signal in intersection.signals:
                 assert isinstance(signal, SignalModel)
                 signal_id = signal._id
-                signals[signal_id] = StreamRealtimeSignalData(None, None, None)
+                signals[signal_id] = StreamRealtimeSignalData(0, 0, 0)
 
-            srd = StreamRealtimeData(Helpers.get_timestamp(), signals, None, None, None, None)
+            srd = StreamRealtimeData(Helpers.get_timestamp(), signals, intersection.signals[0]._id, 30, intersection.signals[1]._id, 30)
             self.data.set_stream_realtime_data(intersection_id, srd)
 
             # Creating threads
@@ -45,6 +46,12 @@ class Streams:
                 self.stream_threads[combined_id] = t
                 t.start()
 
+                # <-----------------testing firebase code----------------->
+
+            # rdo = RealtimeDataObserver(self.data)
+
+                # <-----------------testing end firebase code----------------->
+
     def read_stream_link(self, signal: SignalModel, combined_id: str):
         cap = cv2.VideoCapture(signal.link)
         # split_link = link.split('/')
@@ -59,6 +66,22 @@ class Streams:
                 count = pred[0]  # returns the count of the vehicles
                 self.data.set_stream_counts(stream_name, count)
                 # self.data.stream_counts[stream_name] = count
+
+                # <-----------------testing firebase code----------------->
+
+                # split intersection id and signal id from combined_id=intersection_1_signal_1
+                # split_combined_id = combined_id.split('_')
+                # intersection_id = split_combined_id[0] + '_' + split_combined_id[1]
+                # signal_id = split_combined_id[2] + '_' + split_combined_id[3]
+                # signal = StreamRealtimeSignalData(count[0], count[1], 0)
+                # # print(self.data.get_stream_realtime_data())
+                # intersection = self.data.get_stream_realtime_data()[intersection_id]
+                # signal_data = intersection.get_signals()
+                # signal_data[signal_id] = signal
+                # intersection.set_signals(signal_data)
+                # self.data.set_stream_realtime_data(intersection_id, intersection)
+
+                # <-----------------testing end firebase code----------------->
 
                 # create a stream from the annotated frame
 

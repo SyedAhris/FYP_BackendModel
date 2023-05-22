@@ -64,6 +64,9 @@ class StreamRealtimeData:
     def set_signal(self, id: str, emergency: int, non_emergency: int, time_since_green: int):
         self.__signals[id] = StreamRealtimeSignalData(emergency, non_emergency, time_since_green)
 
+    def set_signals(self, signals):
+        self.__signals = signals
+
     def get_signals(self):
         return self.__signals
 
