@@ -8,13 +8,11 @@ class Data:
     def __init__(self):
         self.repository = MockRepository()
         self.stream_links = self.repository.get_stream_links()
-        self.stream_threads = []
         self.__stream_frames = {}
         self.__stream_counts = {}
         # TODO this needs to be initialized with the data from the database upon fresh start and if it is not present
         #  then it should be initialized with the base values
         self.__stream_realtime_data = {}  # This contains intersection_id as key and StreamRealtimeData as value
-
         self.__observers = []
 
     def get_stream_counts(self):
@@ -37,6 +35,7 @@ class Data:
         from DataObserver.Observer import Observer
         if isinstance(observer, Observer):
             self.__observers.append(observer)
+            print(f'Attaching observer of type {type(observer)}')
         else:
             raise TypeError("observer must be an instance of Observer")
 
@@ -46,14 +45,28 @@ class Data:
             if isinstance(observer, StreamObserver):
                 observer.update()
 
-    def add_stream_realtime_data(self, intersection_id: str, timestamp, stream_realtime_data: StreamRealtimeData):
-        self.__stream_realtime_data[intersection_id][timestamp] = stream_realtime_data
+    def notify_stream_realtime_data_observer(self, intersection_id):
+        from DataObserver.RealtimeDataObserver import RealtimeDataObserver
+        for observer in self.__observers:
+            print(f'Checking Observer')
+            if isinstance(observer, RealtimeDataObserver):
+                print(f'Notifying Observer {observer}')
+                observer.update(intersection_id)
+
+    def set_stream_realtime_data(self, intersection_id: str, stream_realtime_data: StreamRealtimeData):
+        self.__stream_realtime_data[intersection_id] = stream_realtime_data
+        self.notify_stream_realtime_data_observer(intersection_id)
 
     def get_stream_realtime_data(self):
         return self.__stream_realtime_data
 
     def get_stream_realtime_data_by_id(self, intersection_id: str):
-        return self.__stream_realtime_data[intersection_id][list(self.__stream_realtime_data)[-1]]
+        return self.__stream_realtime_data[intersection_id]
+
+    def get_stream_links(self):
+        return self.stream_links
+    # def get_stream_realtime_data_by_id(self, intersection_id: str):
+    #     return self.__stream_realtime_data[intersection_id][list(self.__stream_realtime_data)[-1]]
 
 
 """

@@ -1,6 +1,3 @@
-import pyrebase
-
-
 def get_config():
     firebase_config = {
         "apiKey": "AIzaSyAa6lPkCGbX56Thx3aXKmopns4XUsB3cEU",
