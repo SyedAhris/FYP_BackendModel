@@ -9,6 +9,6 @@ class FirebaseRealtimeRepository:
         self.db = self.firebase.database()
 
     def push_realtime_data(self, intersection_id, data_dict):
-        print(data_dict)
-        print(f'Pushing data to Firebase for intersection {intersection_id}')
+        # print(data_dict)
+        # print(f'Pushing data to Firebase for intersection {intersection_id}')
         self.db.child("realtime_data").child(intersection_id).push(data_dict)

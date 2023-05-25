@@ -9,6 +9,6 @@ class RealtimeDataObserver(Observer):
         self.stream_realtime_data = self.subject.get_stream_realtime_data()
 
     def update(self, intersection_id):
-        print(f'RealtimeDataObserver: Updating {intersection_id}')
+        # print(f'RealtimeDataObserver: Updating {intersection_id}')
         self.stream_realtime_data = self.subject.get_stream_realtime_data_by_id(intersection_id)
         self.firebase_realtime_repository.push_realtime_data(intersection_id, self.stream_realtime_data.convert_to_dict())
