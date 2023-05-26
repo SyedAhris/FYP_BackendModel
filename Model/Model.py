@@ -5,7 +5,11 @@ class Model:
     def __init__(self):
         # self.model = attempt_load('Model/weight.pt', device=torch.device('cpu'))
         # self.model = torch.hub.load('./yolov5', 'custom', path='./Model/Weights/best_5l_v11.pt', source='local')
-        self.model = torch.hub.load('yolov5', 'custom', path='Model/Weights/best.pt', source='local') # use for development
+        self.model = torch.hub.load('yolov5', 'custom', path='Model/Weights/best.pt', source='local')# use for development
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        print(f'Using {device} for inference')
+        self.model.to(device)
+        self.model.eval()
         self.img_size = 640
 
     def pred_annot(self, frame):
